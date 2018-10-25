@@ -138,17 +138,17 @@ class UsersController extends AppController
 if ($this->request->is('post')) {
       $entity = $this->Users->patchEntity($entity, $this->request->getData());
       if (!empty($this->request->getData('email')) && !empty($this->request->getData('password')) && !empty($this->request->getData('password_confirm'))){
-        if($this->Users->save($entity))
-        { if($this->request->getData(['password']) == $this->request->getData(['password_confirm']))
+        if($this->request->getData(['password']) == $this->request->getData(['password_confirm']))
+        { if($this->Users->save($entity))
         {
           $this->Auth->setUser($entity);
           $this->Flash->success(__('The user has been registered. You can now log in.'));
         } else {
-          $this->Flash->error(__('Passwords must match.'));
+          $this->Flash->error(__('Account with this data already exists.'));
         }
       }
       else {
-        $this->Flash->error(__('Account with this data already exists.'));
+        $this->Flash->error(__('Passwords must match.'));
       }
 }
   else {
