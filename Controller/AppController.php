@@ -28,6 +28,7 @@ use Cake\Event\Event;
 class AppController extends Controller
 {
 
+var $components = array('Auth');
     /**
      * Initialization hook method.
      *
@@ -45,10 +46,10 @@ class AppController extends Controller
             'enableBeforeRedirect' => false,
         ]);
         $this->loadComponent('Flash');
-	$this->loadComponent('Auth', [
+	       $this->loadComponent('Auth', [
 		'authenticate' => [
 	 		'Form' => [
-			 'fields' => [ 
+			 'fields' => [
 			   'username' => 'email',
 			   'password' => 'password'
 			]
@@ -59,6 +60,9 @@ class AppController extends Controller
 		'action' => 'login'
 		]
 	]);
+
+  $this->Auth->allow("display");
+
         /*
          * Enable the following component for recommended CakePHP security settings.
          * see https://book.cakephp.org/3.0/en/controllers/components/security.html

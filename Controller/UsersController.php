@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
 
 /**
  * Users Controller
@@ -12,6 +13,11 @@ use App\Controller\AppController;
  */
 class UsersController extends AppController
 {
+
+  var $name = 'Users';
+  var $helpers = array('Html', 'Form');
+  var $scaffold;
+
 
     /**
      * Index method
@@ -54,7 +60,7 @@ class UsersController extends AppController
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('The user has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+              return $this->redirect($this->Auth->redirectUrl());  return $this->redirect(['action' => 'index']);
             }
             $this->Flash->error(__('The user could not be saved. Please, try again.'));
         }
@@ -105,18 +111,48 @@ class UsersController extends AppController
         return $this->redirect(['action' => 'index']);
     }
 
-	//Login
-	public function login(){
-		if($this->request->is('post')){
+    public function beforeFilter(Event $event){
+        $this->Auth->allow('register');
+    }
 
-		$user = $this->Auth->identify();
-		if($user){
-		$this->Auth->setUser($user);
-		return $this->redirect(['controller' => 'users']);
-	}
-	//Bad Login
-	$this->Flash->error('');
-	}
+    public function login()
+    {
+        if ($this->request->is('post')) {
+            $user = $this->Auth->identify();
+            if ($user) {
+                $this->Auth->setUser($user);
+                return $this->redirect($this->Auth->redirectUrl());
+            }
+            $this->Flash->error(__('Invalid username or password, try again'));
+        }
+    }
 
-	}
+    public function logout(){
+        $this->redirect($this->Auth->logout());
+    }
+
+    // SIGN UP ACTION
+    public function register() {
+      $entity = $this->Users->newEntity();
+if ($this->request->is('post')) {
+      $entity = $this->Users->patchEntity($entity, $this->request->getData());
+      if (!empty($this->request->getData('email')) && !empty($this->request->getData('password')) && !empty($this->request->getData('password_confirm'))){
+        if($this->Users->save($entity))
+        { if($this->request->getData(['password']) == $this->request->getData(['password_confirm']))
+        {
+          $this->Auth->setUser($entity);
+          $this->Flash->success(__('The user has been registered. You can now log in.'));
+        } else {
+          $this->Flash->error(__('Passwords must match.'));
+        }
+      }
+      else {
+        $this->Flash->error(__('Account with this data already exists.'));
+      }
+}
+  else {
+    $this->Flash->error(__('Please fill mandatory data.'));
+  }
+}
+}
 }
