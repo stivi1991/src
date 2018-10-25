@@ -121,14 +121,15 @@ class UsersController extends AppController
             $user = $this->Auth->identify();
             if ($user) {
                 $this->Auth->setUser($user);
-                return $this->redirect($this->Auth->redirectUrl());
+                return $this->redirect($this->Auth->redirectUrl(['action' => 'index']));
             }
             $this->Flash->error(__('Invalid username or password, try again'));
         }
     }
 
     public function logout(){
-        $this->redirect($this->Auth->logout());
+        $this->Auth->logout();
+        $this->redirect('/');
     }
 
     // SIGN UP ACTION
